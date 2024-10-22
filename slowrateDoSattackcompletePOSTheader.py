@@ -115,7 +115,6 @@ if __name__ == "__main__":
     parser.add_argument('--path', type=str, default="/", help="Target path (default: '/').")
     parser.add_argument('-P', '--process', type=int, default=1, help="Number of processes to spawn (default: 1).")
     parser.add_argument('-d', '--delay', type=float, default=0, help="Delay between spawning processes in seconds (default: 0.1).")
-    parser.add_argument('-r', '--range', type=int, default=3, help="Range send data (default: 3).")
 
     args = parser.parse_args()
 
