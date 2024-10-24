@@ -57,7 +57,6 @@ def send_slow_post(tls_sock, target, path):
             (':authority', target),
             (':scheme', 'https'),
             (':path', path),
-            #('content-length', '10000'),
             ('content-length', str(len(f'{body}'))),
             ('content-type', 'application/x-www-form-urlencoded')
         ]
@@ -73,16 +72,16 @@ def send_slow_post(tls_sock, target, path):
         bodyTeste2 = ["test=MY", "_UNIQUE_TEST", "_STRING"]
 
         for i in range(len(bodyTeste2) - 1):
-            #print(str(len(f'{body}')))
+            time.sleep(3)
 
             # Send part of the body containing the 'test' parameter
             conn.send_data(stream_id, bodyTeste2[i].encode('utf-8'), end_stream=False)  # Partial data, do not end the stream
             
             tls_sock.sendall(conn.data_to_send())
-
-            time.sleep(5)
             
-        conn.send_data(stream_id, bodyTeste2[2].encode('utf-8'), end_stream=True)  # Partial data, do not end the stream
+        time.sleep(3)
+        
+        conn.send_data(stream_id, bodyTeste2[2].encode('utf-8'), end_stream=True)  # Partial data, ending the stream
             
         tls_sock.sendall(conn.data_to_send())
 
