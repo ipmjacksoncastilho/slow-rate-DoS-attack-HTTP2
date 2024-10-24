@@ -76,6 +76,7 @@ def send_slow_post(tls_sock, target, path):
             conn.send_data(stream_id, body[i].encode('utf-8'), end_stream=False)  # Partial data, do not end the stream
             tls_sock.sendall(conn.data_to_send())
 
+
         # Loop to keep the connection open without sending data (simulating a Slow POST)
         while True:
             # Try receiving a response from the server
