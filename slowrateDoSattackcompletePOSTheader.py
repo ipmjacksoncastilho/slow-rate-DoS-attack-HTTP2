@@ -49,8 +49,7 @@ def send_slow_post(tls_sock, target, path):
         conn.initiate_connection()
         tls_sock.sendall(conn.data_to_send())
         
-        #body1="test=MY123456789abcdefg123456789abcdefg123_UNIQUE_TEST123456789abcdefg123456789abcdefg123456_STRING"
-        body2="abc"
+        body1="test=MY123456789abcdefg123456789abcdefg123_UNIQUE_TEST123456789abcdefg123456789abcdefg123456_STRING"
         
         # Prepare the POST headers
         headers = [
@@ -58,11 +57,9 @@ def send_slow_post(tls_sock, target, path):
             (':authority', target),
             (':scheme', 'https'),
             (':path', path),
-            #('content-length', str(len(f'{body1}'))),
-            ('content-length', str(len(f'{body2}'))),
+            ('content-length', str(len(f'{body1}'))),
             ('content-type', 'application/x-www-form-urlencoded')
         ]
-
 
         # Send HEADERS frame with END_HEADERS set and END_STREAM unset
         stream_id = conn.get_next_available_stream_id()
@@ -71,15 +68,13 @@ def send_slow_post(tls_sock, target, path):
 
         print(f"POST headers sent. Server is waiting for data...")
         
-        #bodyTeste1 = ["test=MY123456789abcdefg123456789abcdefg123", "_UNIQUE_TEST123456789abcdefg123456789abcdefg123456", "_STRING"]
+        bodyTeste1 = ["test=MY123456789abcdefg123456789abcdefg123", "_UNIQUE_TEST123456789abcdefg123456789abcdefg123456", "_STRING"]
         
-        bodyTeste2 = ["a", "b", "c"]
-
-        for i in range(len(bodyTeste2)):
-            time.sleep(3) if i < 1 else time.sleep(60)
+        for i in range(len(bodyTeste1)):
+            time.sleep(2) if i <= 1 else time.sleep(60)
 
             # Send part of the body containing the 'test' parameter
-            conn.send_data(stream_id, bodyTeste2[i].encode('utf-8'), end_stream=False)  # Partial data, do not end the stream
+            conn.send_data(stream_id, bodyTeste1[i].encode('utf-8'), end_stream=False)  # Partial data, do not end the stream
             
             tls_sock.sendall(conn.data_to_send())
             
